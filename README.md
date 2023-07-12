@@ -8,5 +8,4 @@ The  ``data`` folder contains the data used for making the main figures in the m
 The  ``src`` folder contains R and Jupyter Notebook scripts for reproducing the figures; the generated figures are saved in the  ``graph`` folder.
 
 ## Contact
-If you have any questions or requests for additional data related to this paper, please contanct:
-Dongmei Feng, email: fengdi@ucmail.uc.edu
+If you have any questions, please contact Dongmei Feng at fengdi@ucmail.uc.edu
