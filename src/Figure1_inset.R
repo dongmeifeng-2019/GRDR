@@ -25,7 +25,7 @@ prep5 <- df %>%
     cl = ifelse(significance<=significance_level,'yellow',cp[4])
   )
 
-scaleFUN <- function(x) sprintf("%.4f", x)
+scaleFUN <- function(x) sprintf("%.0f", x)
 
 for (iorder in unique(prep5$order)){
   idf = df%>%
@@ -33,41 +33,42 @@ for (iorder in unique(prep5$order)){
   iprep5 = prep5%>%
     filter(order==iorder)
   
-  cl = ifelse(iprep5$significance<=significance_level,cp[3],cp[5])
+  cl = ifelse(iprep5$significance<=significance_level,cp[3],cp[4])
   
   p = ggplot(data=idf,aes(x=year,y=frac))+
     geom_line(color=cp[5],linewidth=0.3)+
     #facet_wrap(~order,ncol=4,strip.position = 'top',scales="free_y")+
     geom_smooth(method=lm, formula=y~x, level=0.95,se=T,color = cp[2],size=0.3,fill = cp[1],linetype='dashed')+
-    scale_y_continuous(label = scaleFUN,breaks=equal_breaks(n=4, s=0.05))#+
-  #scale_x_continuous(breaks=c(1985,1995,2005,2015))
+    ylab(expression(paste('Total flow (km'^3,'/d) ',sep='')))+
+    scale_y_continuous(label = scaleFUN,breaks=equal_breaks(n=4, s=0.05))+
+    scale_x_continuous(breaks=c(1985,1995,2005,2015),labels=c(1985,1995,2005,2015))
   
   p = p + 
-    geom_text(
-    data = iprep5, aes(x = x, y = ymax-0.05*(ymax-ymin),
-                       label = sprintf('%s %s %s',slope_perc,"\u00B1",unct),
-                       fontface  = font_face),color = cl, size=2.2)+
+    # geom_text(
+    # data = iprep5, aes(x = x, y = ymax-0.05*(ymax-ymin), 
+    #                    label = sprintf('%s %s %s',slope_perc,"\u00B1",unct),
+    #                    fontface  = font_face),color = cl, size=2.2)+
     theme_bw()+
     theme(legend.position = 'none',
           #strip.background = element_rect(fill = cp[1]),
           #strip.text = element_text(color = cp[5],size=7),
-          axis.text.y = element_blank(), #element_text(color='black',size=6),
-          axis.text.x = element_blank(),
+          axis.text.y = element_text(color='black',size=6),
+          axis.text.x = element_text(color='black',size=6),
           axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
-          axis.ticks.x = element_blank(),
-          axis.ticks.y = element_blank(),
-          plot.margin = unit(c(0.05,0.05,0.05,0.05), "cm"),
+          axis.title.y = element_text(color='black',size=5),,
+          axis.ticks.x = element_line(color = 'black'),  #element_blank(),
+          axis.ticks.y = element_line(color = 'black'),  #element_blank(),
+          plot.margin = unit(c(0.1,0.05,0.05,0.05), "cm"),
           panel.grid.major = element_blank(),
           panel.border = element_blank(),
-          #axis.line =  element_line(color = 'black'),
-          axis.line =  element_blank(),
+          axis.line =  element_line(color = 'black'),
+          #axis.line =  element_blank(),
           panel.grid.minor = element_blank())
   
   p
   if(iorder=='Stream Order >= 8'){
-    iorder = 'Stream Order = 8'
+    iorder = 'Stream Orde = 8'
   }
   ggsave(sprintf('graph/Figure1_inset_%s.jpg',iorder),
-         p,dpi=600,width=0.8,height=0.65,units='in')
+         p,dpi=900,width=1.2,height=0.65,units='in')
 }

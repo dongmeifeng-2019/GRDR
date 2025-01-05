@@ -1,15 +1,30 @@
+library(foreign)
+library(ggplot2)
+library(viridis)
+library(dplyr)
+library(tidyverse)
 
 #####change to your working directory
 setwd('C:/Research/GlobalQ/global_Q_code/') 
 
-df_pos_sta = read.csv('data/Figure2C_data_pos.csv')
-df_neg_sta = read.csv('data/Figure2C_data_neg.csv')
+df1 = read.csv('data/regulation.csv')
+
+df_pos = df1%>%
+  filter(b>0)
+df_neg = df1%>%
+  filter(b<0)
+
+
+df_pos_sta = df_pos%>%
+  mutate(RL=n_reg/n_basin*100)
+df_neg_sta = df_neg%>%
+  mutate(RL=n_reg/n_basin*100)
 
 regs = c('USE','DOF','URB','RL')
 pval = array(dim=0)
 yposs = array(dim=0)
 for(ireg in regs){
-  sta = t.test(df_pos_sta[,ireg], df_neg_sta[,ireg], var.equal=FALSE)
+  sta = wilcox.test(df_pos_sta[,ireg], df_neg_sta[,ireg], var.equal=FALSE)
   ypos = quantile(df_pos_sta[,ireg],0.75)
   if(ireg=='RL'){ypos=10.8}
   pval = c(pval,sta$p.value)
@@ -61,5 +76,5 @@ p = ggplot(df_agg, aes(fill=reorder(group,-level), y=level,x=reorder(reg,-level,
         panel.grid.minor = element_blank())
 p = p + geom_text(data=prep1,aes(x=x,y=ypos,label=sig),color='black')
 
-ggsave('graph/Figure2C.jpg',
+ggsave('graph/Figure3C.jpg',
        p,dpi=600,width=3,height=3,units='in')
